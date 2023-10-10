@@ -144,7 +144,7 @@ SIMPLE_JWT = {
 
 
 
-CSRF_TRUSTED_ORIGINS = []
+CSRF_TRUSTED_ORIGINS = ['https://music-lovers-production.up.railway.app']
 
 CORS_ALLOW_ALL_ORIGINS=True
 CORS_ALLOW_CREDENTIALS = True
