@@ -36,8 +36,6 @@ class BusinessLoginView(TokenObtainPairView):
     serializer_class = TokenObtainPairSerializer
 
     def post(self, request, *args, **kwargs):
-
-
         try:
             user = get_user_model().objects.get(email=request.data['email'])
             if user.user_type == 1:  # Allow business users to log in
@@ -54,3 +52,7 @@ class BusinessLoginView(TokenObtainPairView):
             )
 
         return response
+
+
+
+
