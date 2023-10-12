@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-7%j3pfrcu%11%@b*n)fmyju!^k%$@o)ro0+*8mqt^9o-4te*ar
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["music-lovers-production.up.railway.app"]
+ALLOWED_HOSTS = ["music-lovers-production.up.railway.app","127.0.0.1"]
 
 
 # Application definition
@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'ml_auth',
     'corsheaders',
+    'business',
 ]
 
 MIDDLEWARE = [

@@ -1,12 +1,9 @@
 from django.db import models
 
-
-
-
 class Business(models.Model):
     user = models.ForeignKey('ml_auth.MusicLoversUser', on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
-    logo = models.ImageField(upload_to='business_logos', blank=True)
+    logo = models.CharField(max_length=100, blank=True)
     ciudad = models.CharField(max_length=100, blank=True)
     barrio = models.CharField(max_length=100, blank=True)
     address = models.CharField(max_length=100, blank=True)
@@ -28,7 +25,7 @@ class BusinessComment(models.Model):
 
 class BusinessPhoto(models.Model):
     business = models.ForeignKey('business.Business', on_delete=models.CASCADE)
-    photo = models.ImageField(upload_to='business_photos')
+    photo = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
         return self.business.name
@@ -70,7 +67,7 @@ class Event(models.Model):
 
 class EventPhoto(models.Model):
     event = models.ForeignKey('business.Event', on_delete=models.CASCADE)
-    photo = models.ImageField(upload_to='event_photos')
+    photo = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
         return self.event.title
