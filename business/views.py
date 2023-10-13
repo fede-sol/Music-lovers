@@ -39,6 +39,15 @@ class CreateEventView(APIView):
         user = request.user
 
         if user.user_type == 1:
+            
+            try:
+                business = Business.objects.get(user=user)
+            except Business.DoesNotExist:
+                return Response({'error': 'El usuario no posee un negocio asignado'}, status=status.HTTP_404_NOT_FOUND)
+
+            request.data._mutable = True
+            request.data['business'] = business.id
+
             serializer = EventSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save()
