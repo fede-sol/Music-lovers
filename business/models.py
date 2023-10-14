@@ -60,6 +60,7 @@ class Event(models.Model):
     datetime = models.DateTimeField()
     artist = models.CharField(max_length=100)
     genre = models.CharField(max_length=50, choices=GENRES)
+    banner = models.ImageField(upload_to='events-banners/', blank=True)
 
     def __str__(self):
         return self.title
