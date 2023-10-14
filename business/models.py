@@ -25,7 +25,7 @@ class BusinessComment(models.Model):
 
 class BusinessPhoto(models.Model):
     business = models.ForeignKey('business.Business', on_delete=models.CASCADE)
-    photo = models.CharField(max_length=100, blank=True)
+    photo = models.ImageField(upload_to='business-images/')
 
     def __str__(self):
         return self.business.name
@@ -67,7 +67,7 @@ class Event(models.Model):
 
 class EventPhoto(models.Model):
     event = models.ForeignKey('business.Event', on_delete=models.CASCADE)
-    photo = models.CharField(max_length=100, blank=True)
+    photo = models.ImageField(upload_to='business-logos/')
 
     def __str__(self):
         return self.event.title
