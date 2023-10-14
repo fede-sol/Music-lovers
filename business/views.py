@@ -21,10 +21,16 @@ class CreateBusinessView(APIView):
         serializer = BusinessSerializer(data=request.data)
         if serializer.is_valid():
             user = request.user
+
+            if user.user_type != 1:
+                return Response({
+                    'error': 'No tiene permisos para crear eventos'},
+                    status=status.HTTP_403_FORBIDDEN
+                )
             existing_commerce = Business.objects.filter(user=user).exists()
             if existing_commerce:
                 return Response({
-                    'error_message': 'El usuario ya posee un negocio asignado.'},
+                    'error': 'El usuario ya posee un negocio asignado.'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
             serializer.save(user=user)
@@ -39,7 +45,7 @@ class CreateEventView(APIView):
         user = request.user
 
         if user.user_type == 1:
-            
+
             try:
                 business = Business.objects.get(user=user)
             except Business.DoesNotExist:
@@ -68,7 +74,7 @@ class ModifyEventView(APIView):
             event = Event.objects.get(id=id_event)
         except Event.DoesNotExist:
             return Response({'error': 'El evento no existe'}, status=status.HTTP_404_NOT_FOUND)
-        
+
         if user == event.business.user:
             serializer = EventSerializer(event, data=request.data)
             if serializer.is_valid():
@@ -76,9 +82,5 @@ class ModifyEventView(APIView):
                 return Response(serializer.data, status=status.HTTP_200_OK)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response({'error': 'No tiene permisos para modificar este evento'}, status=status.HTTP_403_FORBIDDEN)
-    
 
-
-       
-    
 
