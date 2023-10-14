@@ -3,7 +3,7 @@ from django.db import models
 class Business(models.Model):
     user = models.ForeignKey('ml_auth.MusicLoversUser', on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
-    logo = models.CharField(max_length=100, blank=True)
+    logo = models.ImageField(upload_to='business-logos/')
     ciudad = models.CharField(max_length=100, blank=True)
     barrio = models.CharField(max_length=100, blank=True)
     address = models.CharField(max_length=100, blank=True)
