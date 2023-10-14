@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from business.models import Event, Business
-from business.serializers import BusinessPhotoSerializer, BusinessSerializer, EventSerializer
+from business.serializers import BusinessPhotoSerializer, BusinessSerializer, EventPhotoSerializer, EventSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
@@ -111,3 +111,24 @@ class ModifyEventView(APIView):
         return Response({'error': 'No tiene permisos para modificar este evento'}, status=status.HTTP_403_FORBIDDEN)
 
 
+class AddImageEventView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+
+        if user.user_type == 1:
+
+            try:
+                business = Business.objects.get(user=user)
+            except Business.DoesNotExist:
+                return Response({'error': 'El usuario no posee un negocio asignado'}, status=status.HTTP_404_NOT_FOUND)
+
+
+            serializer = EventPhotoSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': 'No tiene permisos para realizar esta acción'}, status=status.HTTP_403_FORBIDDEN)
