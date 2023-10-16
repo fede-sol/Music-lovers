@@ -64,6 +64,25 @@ class AddImageBusinessView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response({'error': 'No tiene permisos para realizar esta acción'}, status=status.HTTP_403_FORBIDDEN)
 
+class BusinessEventsView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+
+        if user.user_type == 1:
+
+            try:
+                business = Business.objects.get(user=user)
+            except Business.DoesNotExist:
+                return Response({'error': 'El usuario no posee un negocio asignado'}, status=status.HTTP_404_NOT_FOUND)
+
+            events = Event.objects.filter(business=business)
+            serializer = EventSerializer(events, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({'error': 'No tiene permisos para realizar esta acción'}, status=status.HTTP_403_FORBIDDEN)
+
 class CreateEventView(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
@@ -124,6 +143,13 @@ class AddImageEventView(APIView):
                 business = Business.objects.get(user=user)
             except Business.DoesNotExist:
                 return Response({'error': 'El usuario no posee un negocio asignado'}, status=status.HTTP_404_NOT_FOUND)
+
+
+            try:
+                if Event.objects.get(id=request.data['event']).business.user != user:
+                    return Response({'error': 'El evento no pertenece a este negocio'}, status=status.HTTP_403_FORBIDDEN)
+            except Event.DoesNotExist:
+                return Response({'error': 'El evento no existe'}, status=status.HTTP_404_NOT_FOUND)
 
 
             serializer = EventPhotoSerializer(data=request.data)
