@@ -163,7 +163,7 @@ class DeleteEventView(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
+    def delete(self, request):
         user = request.user
 
         if user.user_type == 1:
@@ -176,6 +176,6 @@ class DeleteEventView(APIView):
             event = Event.objects.filter(business=business) #####
             event.delete()
 
-            return Response('event deleted', status=status.HTTP_200_OK)
+            return Response({'message':'Evento eliminado exitosamente'}, status=status.HTTP_200_OK)
         return Response({'error': 'No tiene permisos para realizar esta acción'}, status=status.HTTP_403_FORBIDDEN)
 
