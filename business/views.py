@@ -158,3 +158,24 @@ class AddImageEventView(APIView):
                 return Response(serializer.data, status=status.HTTP_200_OK)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response({'error': 'No tiene permisos para realizar esta acción'}, status=status.HTTP_403_FORBIDDEN)
+
+class DeleteEventView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+
+        if user.user_type == 1:
+
+            try:
+                business = Business.objects.get(user=user)
+            except Business.DoesNotExist:
+                return Response({'error': 'El usuario no posee un negocio asignado'}, status=status.HTTP_404_NOT_FOUND)
+
+            event = Event.objects.filter(business=business) #####
+            event.delete()
+
+            return Response('event deleted', status=status.HTTP_200_OK)
+        return Response({'error': 'No tiene permisos para realizar esta acción'}, status=status.HTTP_403_FORBIDDEN)
+
