@@ -174,14 +174,13 @@ class DeleteEventView(APIView):
                 business = Business.objects.get(user=user)
             except Business.DoesNotExist:
                 return Response({'error': 'El usuario no posee un negocio asignado'}, status=status.HTTP_404_NOT_FOUND)
-            
-            try:
-                event = Event.objects.get(user=user)
-            except Event.DoesNotExist:
-                return Response({'error': 'El usuario no posee el evento asignado'}, status=status.HTTP_404_NOT_FOUND)
 
-            events = Event.objects.filter(business=business)
-            events.get(request.id).delete()
+
+            try:
+                events = Event.objects.filter(business=business)
+                events.get(id=request.data['id']).delete()
+            except Event.DoesNotExist:
+                return Response({'error': 'El evento no existe'}, status=status.HTTP_404_NOT_FOUND)
 
             return Response({'message':'Evento eliminado exitosamente'}, status=status.HTTP_200_OK)
         return Response({'error': 'No tiene permisos para realizar esta acción'}, status=status.HTTP_403_FORBIDDEN)
