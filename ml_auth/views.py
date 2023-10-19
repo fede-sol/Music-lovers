@@ -1,17 +1,12 @@
-from django.shortcuts import render
 from ml_auth.models import MusicLoversUser
-
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from rest_framework_simplejwt.authentication import JWTAuthentication
-
-from .serializers import UserSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
+from .serializers import CustomTokenObtainPairSerializer, UserSerializer
 
 
 class BusinessSignupView(APIView):
@@ -23,17 +18,13 @@ class BusinessSignupView(APIView):
             user.set_password(request.data['password'])
             user.user_type = 1  # Set user type as business
             user.save()
-            refresh = RefreshToken.for_user(user)
-            return Response({
-                'access': str(refresh.access_token),
-                'user': serializer.data,
-            })
+            token = CustomTokenObtainPairSerializer().get_token(user)
+            return Response({'access': str(token.access_token)})
 
         return Response(serializer.errors, status=status.HTTP_200_OK)
 
 
 class BusinessLoginView(TokenObtainPairView):
-    serializer_class = TokenObtainPairSerializer
 
     def post(self, request, *args, **kwargs):
         try:
