@@ -3,10 +3,12 @@ from django.db import models
 class Business(models.Model):
     user = models.ForeignKey('ml_auth.MusicLoversUser', on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
+    description = models.CharField(max_length=1000)
     logo = models.ImageField(upload_to='business-logos/')
-    ciudad = models.CharField(max_length=100, blank=True)
-    barrio = models.CharField(max_length=100, blank=True)
+    banner = models.ImageField(upload_to='business-banners/')
     address = models.CharField(max_length=100, blank=True)
+    neighbourhood = models.CharField(max_length=100, blank=True)
+    city = models.CharField(max_length=100, blank=True)
     phone = models.CharField(max_length=100)
 
     def __str__(self):
@@ -50,17 +52,17 @@ class Event(models.Model):
         ('OTRO', 'Otro'),
     )
 
-    business = models.ForeignKey('business.Business', on_delete=models.CASCADE)
-    address = models.CharField(max_length=100, blank=True)
-    ciudad = models.CharField(max_length=100, blank=True)
-    barrio = models.CharField(max_length=100, blank=True)
     title = models.CharField(max_length=100)
     description = models.CharField(max_length=1000)
+    business = models.ForeignKey('business.Business', on_delete=models.CASCADE)
+    banner = models.ImageField(upload_to='events-banners/', blank=True)
+    address = models.CharField(max_length=100, blank=True)
+    neighbourhood = models.CharField(max_length=100, blank=True)
+    city = models.CharField(max_length=100, blank=True)
     price = models.PositiveIntegerField()
     datetime = models.DateTimeField()
     artist = models.CharField(max_length=100)
     genre = models.CharField(max_length=50, choices=GENRES)
-    banner = models.ImageField(upload_to='events-banners/', blank=True)
 
     def __str__(self):
         return self.title
