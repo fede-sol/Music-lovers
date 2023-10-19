@@ -27,7 +27,8 @@ class MusicLoversUser(AbstractUser):
       (1, 'business'),
       (2, 'client'),
     )
-    username = None
+
+    username = models.CharField(max_length=100, unique=False)
     email = models.EmailField(unique=True)
     user_type = models.PositiveSmallIntegerField(choices=USER_TYPE_CHOICES, default=2)
 
