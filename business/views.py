@@ -112,9 +112,9 @@ class ModifyEventView(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def put(self, request, id_event):
+    def put(self, request):
         user = request.user
-        id_event = self.kwargs['id_event']
+        id_event = request.data['id']
 
         try:
             event = Event.objects.get(id=id_event)
