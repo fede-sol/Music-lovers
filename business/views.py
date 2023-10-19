@@ -112,9 +112,9 @@ class ModifyEventView(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def put(self, request, id_event):
+    def put(self, request):
         user = request.user
-        id_event = self.kwargs['id_event']
+        id_event = request.data['id']
 
         try:
             event = Event.objects.get(id=id_event)
@@ -122,6 +122,8 @@ class ModifyEventView(APIView):
             return Response({'error': 'El evento no existe'}, status=status.HTTP_404_NOT_FOUND)
 
         if user == event.business.user:
+            request.data._mutable = True
+            request.data['business'] = event.business.id
             serializer = EventSerializer(event, data=request.data)
             if serializer.is_valid():
                 serializer.save()

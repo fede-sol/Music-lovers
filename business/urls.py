@@ -6,7 +6,7 @@ urlpatterns = [
     path('add-image/', AddImageBusinessView.as_view(), name='add-image-business'),
     path('events/', BusinessEventsView.as_view(), name='list-events'),
     path('event/create/', CreateEventView.as_view(), name='create-event'),
-    path('event/modify/<int:id_event>/', ModifyEventView.as_view(), name='modify-event'),
+    path('event/modify/', ModifyEventView.as_view(), name='modify-event'),
     path('event/add-image/', AddImageEventView.as_view(), name='add-image-event'),
     path('event/delete-event/', DeleteEventView.as_view(), name='delete-event'),
 
