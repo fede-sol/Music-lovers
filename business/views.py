@@ -62,6 +62,36 @@ class AddImageBusinessView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response({'error': 'No tiene permisos para realizar esta acción'}, status=status.HTTP_403_FORBIDDEN)
 
+class ModifyBusinessView(APIView):
+        authentication_classes = [JWTAuthentication]
+        permission_classes = [IsAuthenticated]
+
+        def put(self, request):
+            user = request.user
+
+            if user.user_type == 1:
+
+                try:
+                    business = Business.objects.get(user=user)
+                except Business.DoesNotExist:
+                    return Response({'error': 'El usuario no posee un negocio asignado'}, status=status.HTTP_404_NOT_FOUND)
+
+                request.data._mutable = True
+
+                if 'logo' not in request.data:
+                    request.data['logo'] = business.logo
+                if 'banner' not in request.data:
+                    request.data['banner'] = business.banner
+
+
+                serializer = BusinessSerializer(business, data=request.data)
+                if serializer.is_valid():
+                    serializer.save()
+                    token = CustomTokenObtainPairSerializer().get_token(user)
+                    return Response({'access': str(token.access_token)}, status=status.HTTP_200_OK)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'No tiene permisos para realizar esta acción'}, status=status.HTTP_403_FORBIDDEN)
+
 class BusinessEventsView(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
@@ -122,6 +152,10 @@ class ModifyEventView(APIView):
         if user == event.business.user:
             request.data._mutable = True
             request.data['business'] = event.business.id
+
+            if 'banner' not in request.data:
+                request.data['banner'] = event.banner
+
             serializer = EventSerializer(event, data=request.data)
             if serializer.is_valid():
                 serializer.save()
