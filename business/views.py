@@ -1,15 +1,12 @@
-from django.shortcuts import render
 from business.models import Event, Business
 from business.serializers import BusinessPhotoSerializer, BusinessSerializer, EventPhotoSerializer, EventSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-from django.contrib.auth import get_user_model
-from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
+
+from ml_auth.serializers import CustomTokenObtainPairSerializer
 
 
 class CreateBusinessView(APIView):
@@ -34,7 +31,8 @@ class CreateBusinessView(APIView):
                     status=status.HTTP_400_BAD_REQUEST
                 )
             serializer.save(user=user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            token = CustomTokenObtainPairSerializer().get_token(user)
+            return Response({'access': str(token.access_token)}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
