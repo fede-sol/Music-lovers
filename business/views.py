@@ -223,8 +223,6 @@ class DeleteEventView(APIView):
 
 
 class FilterEventsView(APIView):
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         user = request.user
@@ -265,8 +263,6 @@ class FilterEventsView(APIView):
 
 
 class FilterBusinessView(APIView):
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         user = request.user
