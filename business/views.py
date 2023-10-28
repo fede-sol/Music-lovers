@@ -92,6 +92,19 @@ class ModifyBusinessView(APIView):
                     return Response({'access': str(token.access_token)}, status=status.HTTP_200_OK)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             return Response({'error': 'No tiene permisos para realizar esta acción'}, status=status.HTTP_403_FORBIDDEN)
+        
+class BusinessView(APIView):
+
+    def get(self, request):
+        user = request.user
+
+        try:
+            business = Business.objects.get(user=user)
+        except Business.DoesNotExist:
+            return Response({'error': 'El negocio no existe'}, status=status.HTTP_404_NOT_FOUND)
+
+        serialized_business = BusinessSerializer(business)
+        return Response(serialized_business.data, status=status.HTTP_200_OK)
 
 
 class BusinessEventsView(APIView):
@@ -232,9 +245,11 @@ class FilterEventsView(APIView):
         address = request.query_params.get('address', None)
         neighborhood = request.query_params.get('neighborhood', None)
         city = request.query_params.get('city', None)
-        price = request.query_params.get('price', None)
-        date = request.query_params.get('date', None)
         artist = request.query_params.get('artist', None)
+        maxprice = request.query_params.get('maxprice', None)
+        minprice = request.query_params.get('minprice', None)
+        maxdate = request.query_params.get('maxdate', None)
+        mindate = request.query_params.get('mindate', None)
         
         events = Event.objects.all()
 
@@ -251,12 +266,17 @@ class FilterEventsView(APIView):
             events = events.filter(neighborhood__icontains=neighborhood)
         if city:
             events = events.filter(city__icontains=city)
-        if price:
-            events = events.filter(price__lte=price)
-        if date:
-            events = events.filter(datetime__date=date)
         if artist:
             events = events.filter(artist__icontains=artist)
+        if maxprice:
+            events = events.filter(price__lte=maxprice)
+        if minprice:
+            events = events.filter(price__gte=minprice)
+        if maxdate:
+            events = events.filter(datetime__lte=maxdate)
+        if mindate:
+            events = events.filter(datetime__gte=mindate)
+        
 
         serialized_events = EventSerializer(events, many=True)
         return Response(serialized_events.data, status=status.HTTP_200_OK)
@@ -285,6 +305,9 @@ class FilterBusinessView(APIView):
        
         serialized_businesses = BusinessSerializer(businesses, many=True)
         return Response(serialized_businesses.data, status=status.HTTP_200_OK)
+
+
+
 
 
 
