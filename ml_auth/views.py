@@ -45,5 +45,40 @@ class BusinessLoginView(TokenObtainPairView):
         return response
 
 
+class ClientSignupView(APIView):
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            user = get_user_model().objects.get(email=request.data['email'])
+            user.set_password(request.data['password'])
+            user.user_type = 2  # Set user type as business
+            user.save()
+            token = CustomTokenObtainPairSerializer().get_token(user)
+            return Response({'access': str(token.access_token)})
+
+        return Response(serializer.errors, status=status.HTTP_200_OK)
+
+
+class ClientLoginView(TokenObtainPairView):
+
+    def post(self, request, *args, **kwargs):
+        try:
+            user = get_user_model().objects.get(email=request.data['email'])
+            if user.user_type == 2:  # Allow business users to log in
+                response = super().post(request, *args, **kwargs)
+            else:
+                response = Response(
+                    {'detail': 'Access denied for this user type.'},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+        except MusicLoversUser.DoesNotExist:
+            response = Response(
+                {'detail': 'No user with this email exists.'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        return response
+
 
 
