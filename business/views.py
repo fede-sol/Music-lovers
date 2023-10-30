@@ -273,9 +273,9 @@ class FilterEventsView(APIView):
         if minprice:
             events = events.filter(price__gte=minprice)
         if maxdate:
-            events = events.filter(datetime__lte=maxdate)
+            events = events.filter(datetime__date__lte=maxdate)
         if mindate:
-            events = events.filter(datetime__gte=mindate)
+            events = events.filter(datetime__date__gte=mindate)
         
 
         serialized_events = EventSerializer(events, many=True)
