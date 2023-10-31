@@ -14,10 +14,10 @@ class BusinessPhotoSerializer(serializers.ModelSerializer):
 
 
 class EventSerializer(serializers.ModelSerializer):
-    genre = serializers.CharField(source='get_genre_display')
-    class Meta(object):
+    class Meta:
         model = Event
-        fields = ['id', 'business', 'address', 'city', 'neighbourhood', 'title', 'description', 'price', 'datetime', 'artist', 'genre','banner']
+        fields = ['id', 'business', 'address', 'city', 'neighbourhood', 'title', 'description', 'price', 'datetime', 'artist', 'genre', 'banner']
+
 
 class EventPhotoSerializer(serializers.ModelSerializer):
     class Meta(object):
