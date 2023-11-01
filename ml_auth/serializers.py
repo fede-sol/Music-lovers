@@ -36,7 +36,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
             except Business.DoesNotExist:
                 token['business_id'] = None
         else:
-            if user.logo.url:
+            if user.logo:
                 token['logo'] = user.logo.url
         token['user_type'] = user.user_type
 

@@ -5,8 +5,9 @@ from rest_framework.response import Response
 from business.models import Business
 from business.serializers import BusinessSerializer
 from client.models import UserPreferences
+from client.serializers import UserPreferenceSerializer
 from ml_auth.models import MusicLoversUser
-from ml_auth.serializers import CustomTokenObtainPairSerializer
+from ml_auth.serializers import CustomTokenObtainPairSerializer, UserSerializer
 from rest_framework import status
 
 
@@ -23,8 +24,10 @@ class ModifyClientProfileView(APIView):
             request.data._mutable = True
             data = request.data
 
+            dict = {'logo':data['logo']}
+
             if 'logo' in data:
-                serializer = MusicLoversUser(instance=user, data={data['logo']}, partial=True)
+                serializer = UserSerializer(instance=user, data=dict, partial=True)
                 del data['logo']
 
             if serializer.is_valid():
@@ -33,13 +36,12 @@ class ModifyClientProfileView(APIView):
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
             try:
                 preferences = UserPreferences.objects.get(user=user)
             except UserPreferences.DoesNotExist:
                 return Response({'error': 'El usuario no posee preferencias asignadas'}, status=status.HTTP_404_NOT_FOUND)
 
-            serializer = UserPreferences(instance=preferences, data=data, partial=True)
+            serializer = UserPreferenceSerializer(instance=preferences, data=data, partial=True)
 
 
 

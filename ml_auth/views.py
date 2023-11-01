@@ -19,8 +19,6 @@ class BusinessSignupView(APIView):
             user.set_password(request.data['password'])
             user.user_type = 1  # Set user type as business
             user.save()
-            preferences = UserPreferences(user=user)
-            preferences.save()
             token = CustomTokenObtainPairSerializer().get_token(user)
             return Response({'access': str(token.access_token)})
 
@@ -57,6 +55,8 @@ class ClientSignupView(APIView):
             user.set_password(request.data['password'])
             user.user_type = 2  # Set user type as business
             user.save()
+            preferences = UserPreferences(user=user)
+            preferences.save()
             token = CustomTokenObtainPairSerializer().get_token(user)
             return Response({'access': str(token.access_token)})
 
