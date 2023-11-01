@@ -24,16 +24,16 @@ class ModifyClientProfileView(APIView):
             request.data._mutable = True
             data = request.data
 
-            dict = {'logo':data['logo']}
 
             if 'logo' in data:
+                dict = {'logo':data['logo']}
                 serializer = UserSerializer(instance=user, data=dict, partial=True)
                 del data['logo']
 
-            if serializer.is_valid():
-                serializer.save()
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                if serializer.is_valid():
+                    serializer.save()
+                else:
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
             try:
@@ -50,6 +50,28 @@ class ModifyClientProfileView(APIView):
                 token = CustomTokenObtainPairSerializer().get_token(user)
                 return Response({'access': str(token.access_token)}, status=status.HTTP_200_OK)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': 'No tiene permisos para realizar esta acción'}, status=status.HTTP_403_FORBIDDEN)
+
+
+
+class GetUserProfileView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        if user.user_type == 2:
+
+            try:
+                preferences = UserPreferences.objects.get(user=user)
+            except UserPreferences.DoesNotExist:
+                return Response({'error': 'El usuario no posee preferencias asignadas'}, status=status.HTTP_404_NOT_FOUND)
+
+            serializer = UserPreferenceSerializer(preferences)
+
+            res = {**serializer.data,'logo':user.logo.url}
+
+            return Response(res, status=status.HTTP_200_OK)
         return Response({'error': 'No tiene permisos para realizar esta acción'}, status=status.HTTP_403_FORBIDDEN)
 
 
