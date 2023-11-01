@@ -7,7 +7,7 @@ class UserPreferences(models.Model):
     GENRES = (
         ('ROCK', 'Rock'),
         ('POP', 'Pop'),
-        ('ELECTRONICA', 'Electronica'),
+        ('ELECTRO', 'Electro'),
         ('HIPHOP', 'Hip Hop'),
         ('REGGAE', 'Reggae'),
         ('REGGAETON', 'Reggaeton'),
