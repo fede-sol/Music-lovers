@@ -8,4 +8,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('ml_auth.urls')),
     path('business/', include('business.urls')),
+    path('client/', include('client.urls')),
 ]+ static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT) + staticfiles_urlpatterns()
