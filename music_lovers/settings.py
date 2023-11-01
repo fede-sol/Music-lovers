@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'ml_auth',
     'corsheaders',
     'business',
+    'client',
 ]
 
 MIDDLEWARE = [

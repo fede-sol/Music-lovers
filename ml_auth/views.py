@@ -1,3 +1,4 @@
+from client.models import UserPreferences
 from ml_auth.models import MusicLoversUser
 from rest_framework.response import Response
 from rest_framework import status
@@ -18,6 +19,8 @@ class BusinessSignupView(APIView):
             user.set_password(request.data['password'])
             user.user_type = 1  # Set user type as business
             user.save()
+            preferences = UserPreferences(user=user)
+            preferences.save()
             token = CustomTokenObtainPairSerializer().get_token(user)
             return Response({'access': str(token.access_token)})
 
