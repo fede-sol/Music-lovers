@@ -69,7 +69,11 @@ class GetUserProfileView(APIView):
 
             serializer = UserPreferenceSerializer(preferences)
 
-            res = {**serializer.data,'logo':user.logo.url}
+
+            if user.logo:
+                res = {**serializer.data,'logo':user.logo.url}
+            else:
+                res = {**serializer.data}
 
             return Response(res, status=status.HTTP_200_OK)
         return Response({'error': 'No tiene permisos para realizar esta acción'}, status=status.HTTP_403_FORBIDDEN)
