@@ -109,7 +109,10 @@ class EventComment(models.Model):
         return self.user.username
 
     def user_logo(self):
-        return self.user.logo.url
+        if self.user.logo:
+            return self.user.logo.url
+        else:
+            return ''
 
     def __str__(self):
         return self.event.title
@@ -130,12 +133,17 @@ class BusinessComment(models.Model):
         return self.user.username
 
     def user_logo(self):
-        return self.user.logo.url
+        if self.user.logo:
+            return self.user.logo.url
+        else:
+            return ''
+
 
     def __str__(self):
-        return self.event.title
+        return self.business.name
 
     def save(self, *args, **kwargs):
         if self.rating < 1 or self.rating > 5:
             raise ValidationError('Rating must be between 1 and 5')
         super().save(*args, **kwargs)
+        

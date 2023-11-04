@@ -348,3 +348,76 @@ class GetBusinessView(APIView):
         serialized_comments = BusinessCommentSerializer(comments, many=True)
 
         return Response({'business':serialized_business.data,'comments':serialized_comments.data}, status=status.HTTP_200_OK)
+
+
+class GetCommentsView(APIView):
+
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+
+        try:
+            business = Business.objects.get(user=user)
+        except Business.DoesNotExist:
+            return Response({'error': 'El usuario no tiene un negocio asignado'}, status=status.HTTP_404_NOT_FOUND)
+
+        business_events = Event.objects.filter(business=business)
+        event_comments = EventComment.objects.filter(event__in=business_events)
+        serialized_event_comments = EventCommentSerializer(event_comments, many=True).data
+
+        business_comments = BusinessComment.objects.filter(business=business)
+        serialized_business_comments = BusinessCommentSerializer(business_comments, many=True).data
+
+        return Response({'business_comments':serialized_business_comments,'event_comments':serialized_event_comments}, status=status.HTTP_200_OK)
+    
+
+class DeleteBusinessComment(APIView):
+    
+        authentication_classes = [JWTAuthentication]
+        permission_classes = [IsAuthenticated]
+    
+        def delete(self, request):
+            user = request.user
+    
+            try:
+                business = Business.objects.get(user=user)
+            except Business.DoesNotExist:
+                return Response({'error': 'El usuario no tiene un negocio asignado'}, status=status.HTTP_404_NOT_FOUND)
+    
+            try:
+                comment = BusinessComment.objects.get(id=request.query_params.get('id', None))
+            except BusinessComment.DoesNotExist:
+                return Response({'error': 'El comentario no existe'}, status=status.HTTP_404_NOT_FOUND)
+    
+            if comment.business == business:
+                comment.delete()
+                return Response({'message':'Comentario eliminado exitosamente'}, status=status.HTTP_200_OK)
+            return Response({'error': 'No tiene permisos para realizar esta acción'}, status=status.HTTP_403_FORBIDDEN)
+
+
+class DeleteEventComment(APIView):
+    
+        authentication_classes = [JWTAuthentication]
+        permission_classes = [IsAuthenticated]
+    
+        def delete(self, request):
+            user = request.user
+    
+            try:
+                business = Business.objects.get(user=user)
+            except Business.DoesNotExist:
+                return Response({'error': 'El usuario no tiene un negocio asignado'}, status=status.HTTP_404_NOT_FOUND)
+    
+            try:
+                comment = EventComment.objects.get(id=request.query_params.get('id', None))
+            except EventComment.DoesNotExist:
+                return Response({'error': 'El comentario no existe'}, status=status.HTTP_404_NOT_FOUND)
+            
+            business_events = Event.objects.filter(business=business)
+
+            if comment.event in business_events:
+                comment.delete()
+                return Response({'message':'Comentario eliminado exitosamente'}, status=status.HTTP_200_OK)
+            return Response({'error': 'No tiene permisos para realizar esta acción'}, status=status.HTTP_403_FORBIDDEN)
