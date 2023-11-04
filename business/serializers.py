@@ -28,11 +28,11 @@ class EventPhotoSerializer(serializers.ModelSerializer):
 class EventCommentSerializer(serializers.ModelSerializer):
     class Meta(object):
         model = EventComment
-        fields = ['id', 'event', 'user', 'text', 'rating']
+        fields = ['id', 'event', 'user','user_name','user_logo', 'text', 'rating']
 
 
 class BusinessCommentSerializer(serializers.ModelSerializer):
     class Meta(object):
         model = BusinessComment
-        fields = ['id', 'business', 'user', 'text', 'rating']
+        fields = ['id', 'business', 'user', 'user_name','user_logo','text', 'rating']
 

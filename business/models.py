@@ -1,4 +1,5 @@
 from django.db import models
+from django.forms import ValidationError
 
 class Business(models.Model):
     user = models.ForeignKey('ml_auth.MusicLoversUser', on_delete=models.CASCADE)
@@ -104,8 +105,19 @@ class EventComment(models.Model):
     text = models.CharField(max_length=250)
     rating = models.PositiveSmallIntegerField()
 
+    def user_name(self):
+        return self.user.username
+
+    def user_logo(self):
+        return self.user.logo.url
+
     def __str__(self):
         return self.event.title
+
+    def save(self, *args, **kwargs):
+        if self.rating < 1 or self.rating > 5:
+            raise ValidationError('Rating must be between 1 and 5')
+        super().save(*args, **kwargs)
 
 
 class BusinessComment(models.Model):
@@ -114,5 +126,16 @@ class BusinessComment(models.Model):
     text = models.CharField(max_length=250)
     rating = models.PositiveSmallIntegerField()
 
+    def user_name(self):
+        return self.user.username
+
+    def user_logo(self):
+        return self.user.logo.url
+
     def __str__(self):
         return self.event.title
+
+    def save(self, *args, **kwargs):
+        if self.rating < 1 or self.rating > 5:
+            raise ValidationError('Rating must be between 1 and 5')
+        super().save(*args, **kwargs)

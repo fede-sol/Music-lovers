@@ -94,6 +94,8 @@ class ModifyBusinessView(APIView):
             return Response({'error': 'No tiene permisos para realizar esta acción'}, status=status.HTTP_403_FORBIDDEN)
 
 class BusinessView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         user = request.user
@@ -105,11 +107,8 @@ class BusinessView(APIView):
 
         serialized_business = BusinessSerializer(business)
 
-        comments = BusinessComment.objects.filter(business=business)
-        serialized_comments = BusinessCommentSerializer(comments, many=True)
 
-
-        return Response({'business':serialized_business.data,'comments':serialized_comments.data}, status=status.HTTP_200_OK)
+        return Response(serialized_business.data, status=status.HTTP_200_OK)
 
 
 class BusinessEventsView(APIView):
@@ -330,3 +329,22 @@ class GetEventView(APIView):
         serialized_comments = EventCommentSerializer(comments, many=True)
 
         return Response({'event':serialized_event.data,'comments':serialized_comments.data}, status=status.HTTP_200_OK)
+
+
+class GetBusinessView(APIView):
+
+    def get(self, request):
+        user = request.user
+
+        try:
+            business = Business.objects.get(id=request.query_params.get('id', None))
+        except Business.DoesNotExist:
+            return Response({'error': 'El negocio no existe'}, status=status.HTTP_404_NOT_FOUND)
+
+
+        comments = BusinessComment.objects.filter(business=business)
+
+        serialized_business = BusinessSerializer(business)
+        serialized_comments = BusinessCommentSerializer(comments, many=True)
+
+        return Response({'business':serialized_business.data,'comments':serialized_comments.data}, status=status.HTTP_200_OK)
