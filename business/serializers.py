@@ -1,11 +1,11 @@
-from business.models import Business, BusinessPhoto, Event, EventPhoto
+from business.models import Business, BusinessComment, BusinessPhoto, Event, EventComment, EventPhoto
 from rest_framework import serializers
 
 
 class BusinessSerializer(serializers.ModelSerializer):
     class Meta(object):
         model = Business
-        fields = ['id', 'name', 'address', 'city', 'neighbourhood', 'phone', 'logo', 'banner', 'description']
+        fields = ['id', 'name', 'address', 'city', 'neighbourhood', 'phone', 'logo', 'banner', 'description', 'average_rating']
 
 class BusinessPhotoSerializer(serializers.ModelSerializer):
     class Meta(object):
@@ -17,11 +17,22 @@ class EventSerializer(serializers.ModelSerializer):
     genre_display = serializers.CharField(source='get_genre_display', read_only=True)
     class Meta:
         model = Event
-        fields = ['id', 'business', 'address', 'city', 'neighbourhood', 'title', 'description', 'price', 'datetime', 'artist', 'genre', 'genre_display', 'banner']
+        fields = ['id', 'business', 'address', 'city', 'neighbourhood', 'title', 'description', 'price', 'datetime', 'artist', 'genre', 'genre_display', 'banner','average_rating']
 
 
 class EventPhotoSerializer(serializers.ModelSerializer):
     class Meta(object):
         model = EventPhoto
         fields = ['id', 'event', 'photo']
+
+class EventCommentSerializer(serializers.ModelSerializer):
+    class Meta(object):
+        model = EventComment
+        fields = ['id', 'event', 'user', 'text', 'rating']
+
+
+class BusinessCommentSerializer(serializers.ModelSerializer):
+    class Meta(object):
+        model = BusinessComment
+        fields = ['id', 'business', 'user', 'text', 'rating']
 

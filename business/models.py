@@ -11,6 +11,16 @@ class Business(models.Model):
     city = models.CharField(max_length=100, blank=True)
     phone = models.CharField(max_length=100)
 
+    def average_rating(self):
+        comments = BusinessComment.objects.filter(business=self)
+        if comments.count() == 0:
+            return 0
+        else:
+            sum = 0
+            for comment in comments:
+                sum += comment.rating
+            return sum / comments.count()
+
     def __str__(self):
         return self.name
 
@@ -64,6 +74,18 @@ class Event(models.Model):
     artist = models.CharField(max_length=100)
     genre = models.CharField(max_length=50, choices=GENRES)
 
+    def average_rating(self):
+        comments = EventComment.objects.filter(event=self)
+        if comments.count() == 0:
+            return 0
+        else:
+            sum = 0
+            for comment in comments:
+                sum += comment.rating
+            return sum / comments.count()
+
+
+
     def __str__(self):
         return self.title
 
@@ -78,6 +100,16 @@ class EventPhoto(models.Model):
 
 class EventComment(models.Model):
     event = models.ForeignKey('business.Event', on_delete=models.CASCADE)
+    user = models.ForeignKey('ml_auth.MusicLoversUser', on_delete=models.CASCADE)
+    text = models.CharField(max_length=250)
+    rating = models.PositiveSmallIntegerField()
+
+    def __str__(self):
+        return self.event.title
+
+
+class BusinessComment(models.Model):
+    business = models.ForeignKey('business.Business', on_delete=models.CASCADE)
     user = models.ForeignKey('ml_auth.MusicLoversUser', on_delete=models.CASCADE)
     text = models.CharField(max_length=250)
     rating = models.PositiveSmallIntegerField()

@@ -1,5 +1,5 @@
-from business.models import Event, Business
-from business.serializers import BusinessPhotoSerializer, BusinessSerializer, EventPhotoSerializer, EventSerializer
+from business.models import BusinessComment, Event, Business, EventComment
+from business.serializers import BusinessCommentSerializer, BusinessPhotoSerializer, BusinessSerializer, EventCommentSerializer, EventPhotoSerializer, EventSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
@@ -92,7 +92,7 @@ class ModifyBusinessView(APIView):
                     return Response({'access': str(token.access_token)}, status=status.HTTP_200_OK)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             return Response({'error': 'No tiene permisos para realizar esta acción'}, status=status.HTTP_403_FORBIDDEN)
-        
+
 class BusinessView(APIView):
 
     def get(self, request):
@@ -104,7 +104,12 @@ class BusinessView(APIView):
             return Response({'error': 'El negocio no existe'}, status=status.HTTP_404_NOT_FOUND)
 
         serialized_business = BusinessSerializer(business)
-        return Response(serialized_business.data, status=status.HTTP_200_OK)
+
+        comments = BusinessComment.objects.filter(business=business)
+        serialized_comments = BusinessCommentSerializer(comments, many=True)
+
+
+        return Response({'business':serialized_business.data,'comments':serialized_comments.data}, status=status.HTTP_200_OK)
 
 
 class BusinessEventsView(APIView):
@@ -241,7 +246,7 @@ class FilterEventsView(APIView):
         user = request.user
 
         title = request.query_params.get('title', None)
-        genre = self.request.query_params.getlist('genre', []) 
+        genre = self.request.query_params.getlist('genre', [])
         address = request.query_params.get('address', None)
         neighborhood = request.query_params.get('neighborhood', None)
         city = request.query_params.get('city', None)
@@ -250,7 +255,7 @@ class FilterEventsView(APIView):
         minprice = request.query_params.get('minprice', None)
         maxdate = request.query_params.get('maxdate', None)
         mindate = request.query_params.get('mindate', None)
-        
+
         events = Event.objects.all()
 
         if title:
@@ -262,7 +267,7 @@ class FilterEventsView(APIView):
             events = events.filter(query)
         if address:
             events = events.filter(address__icontains=address)
-        if neighborhood:  
+        if neighborhood:
             events = events.filter(neighborhood__icontains=neighborhood)
         if city:
             events = events.filter(city__icontains=city)
@@ -276,7 +281,7 @@ class FilterEventsView(APIView):
             events = events.filter(datetime__date__lte=maxdate)
         if mindate:
             events = events.filter(datetime__date__gte=mindate)
-        
+
 
         serialized_events = EventSerializer(events, many=True)
         return Response(serialized_events.data, status=status.HTTP_200_OK)
@@ -298,22 +303,30 @@ class FilterBusinessView(APIView):
             businesses = businesses.filter(name__icontains=name)
         if address:
             businesses = businesses.filter(address__icontains=address)
-        if neighborhood:  
+        if neighborhood:
             businesses = businesses.filter(neighborhood__icontains=neighborhood)
         if city:
             businesses = businesses.filter(city__icontains=city)
-       
+
         serialized_businesses = BusinessSerializer(businesses, many=True)
         return Response(serialized_businesses.data, status=status.HTTP_200_OK)
 
 
 
+class GetEventView(APIView):
+
+    def get(self, request):
+        user = request.user
+
+        try:
+            event = Event.objects.get(id=request.query_params.get('id', None))
+        except Event.DoesNotExist:
+            return Response({'error': 'El evento no existe'}, status=status.HTTP_404_NOT_FOUND)
 
 
+        comments = EventComment.objects.filter(event=event)
 
+        serialized_event = EventSerializer(event)
+        serialized_comments = EventCommentSerializer(comments, many=True)
 
-
-    
-        
-
-
+        return Response({'event':serialized_event.data,'comments':serialized_comments.data}, status=status.HTTP_200_OK)

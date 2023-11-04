@@ -1,5 +1,5 @@
 from django.urls import path
-from business.views import AddImageBusinessView, AddImageEventView, BusinessEventsView, CreateEventView, ModifyBusinessView, BusinessView, ModifyEventView, CreateBusinessView, DeleteEventView, FilterEventsView, FilterBusinessView
+from business.views import AddImageBusinessView, AddImageEventView, BusinessEventsView, CreateEventView, GetEventView, ModifyBusinessView, BusinessView, ModifyEventView, CreateBusinessView, DeleteEventView, FilterEventsView, FilterBusinessView
 
 urlpatterns = [
     path('create/', CreateBusinessView.as_view(), name='create-business'),
@@ -11,6 +11,7 @@ urlpatterns = [
     path('event/modify/', ModifyEventView.as_view(), name='modify-event'),
     path('event/add-image/', AddImageEventView.as_view(), name='add-image-event'),
     path('event/delete-event/', DeleteEventView.as_view(), name='delete-event'),
-    path('events/get/', FilterEventsView.as_view(), name='filter-events'),
-    path('get/', FilterBusinessView.as_view(), name='filter-business')
+    path('events/filter/', FilterEventsView.as_view(), name='filter-events'),
+    path('events/get/', GetEventView.as_view(), name='get-event'),
+    path('filter/', FilterBusinessView.as_view(), name='filter-business'),
 ]
