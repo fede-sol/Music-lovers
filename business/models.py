@@ -1,4 +1,5 @@
 from django.db import models
+from django.forms import ValidationError
 
 class Business(models.Model):
     user = models.ForeignKey('ml_auth.MusicLoversUser', on_delete=models.CASCADE)
@@ -10,6 +11,16 @@ class Business(models.Model):
     neighbourhood = models.CharField(max_length=100, blank=True)
     city = models.CharField(max_length=100, blank=True)
     phone = models.CharField(max_length=100)
+
+    def average_rating(self):
+        comments = BusinessComment.objects.filter(business=self)
+        if comments.count() == 0:
+            return 0
+        else:
+            sum = 0
+            for comment in comments:
+                sum += comment.rating
+            return sum / comments.count()
 
     def __str__(self):
         return self.name
@@ -64,6 +75,18 @@ class Event(models.Model):
     artist = models.CharField(max_length=100)
     genre = models.CharField(max_length=50, choices=GENRES)
 
+    def average_rating(self):
+        comments = EventComment.objects.filter(event=self)
+        if comments.count() == 0:
+            return 0
+        else:
+            sum = 0
+            for comment in comments:
+                sum += comment.rating
+            return sum / comments.count()
+
+
+
     def __str__(self):
         return self.title
 
@@ -82,5 +105,37 @@ class EventComment(models.Model):
     text = models.CharField(max_length=250)
     rating = models.PositiveSmallIntegerField()
 
+    def user_name(self):
+        return self.user.username
+
+    def user_logo(self):
+        return self.user.logo.url
+
     def __str__(self):
         return self.event.title
+
+    def save(self, *args, **kwargs):
+        if self.rating < 1 or self.rating > 5:
+            raise ValidationError('Rating must be between 1 and 5')
+        super().save(*args, **kwargs)
+
+
+class BusinessComment(models.Model):
+    business = models.ForeignKey('business.Business', on_delete=models.CASCADE)
+    user = models.ForeignKey('ml_auth.MusicLoversUser', on_delete=models.CASCADE)
+    text = models.CharField(max_length=250)
+    rating = models.PositiveSmallIntegerField()
+
+    def user_name(self):
+        return self.user.username
+
+    def user_logo(self):
+        return self.user.logo.url
+
+    def __str__(self):
+        return self.event.title
+
+    def save(self, *args, **kwargs):
+        if self.rating < 1 or self.rating > 5:
+            raise ValidationError('Rating must be between 1 and 5')
+        super().save(*args, **kwargs)

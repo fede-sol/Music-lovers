@@ -3,7 +3,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from business.models import Business
-from business.serializers import BusinessSerializer
+from business.serializers import BusinessCommentSerializer, BusinessSerializer, EventCommentSerializer
 from client.models import UserPreferences
 from client.serializers import UserPreferenceSerializer
 from ml_auth.models import MusicLoversUser
@@ -79,3 +79,42 @@ class GetUserProfileView(APIView):
         return Response({'error': 'No tiene permisos para realizar esta acción'}, status=status.HTTP_403_FORBIDDEN)
 
 
+class CreateEventCommentView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+
+        if user.user_type == 2:
+            data = request.data
+            data._mutable = True
+            data['user'] = user.id
+            serializer = EventCommentSerializer(data=data)
+
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response({'error': 'No se pudo crear el comentario'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': 'No tiene permisos para realizar esta acción'}, status=status.HTTP_403_FORBIDDEN)
+
+
+
+class CreateBusinessCommentView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+
+        if user.user_type == 2:
+            data = request.data
+            data._mutable = True
+            data['user'] = user.id
+            serializer = BusinessCommentSerializer(data=data)
+
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response({'error': 'No se pudo crear el comentario'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': 'No tiene permisos para realizar esta acción'}, status=status.HTTP_403_FORBIDDEN)
