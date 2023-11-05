@@ -104,12 +104,16 @@ class EventComment(models.Model):
     user = models.ForeignKey('ml_auth.MusicLoversUser', on_delete=models.CASCADE)
     text = models.CharField(max_length=250)
     rating = models.PositiveSmallIntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def user_name(self):
         return self.user.username
 
     def user_logo(self):
         return self.user.logo.url
+
+    def event_name(self):
+        return self.event.title
 
     def __str__(self):
         return self.event.title
@@ -125,6 +129,8 @@ class BusinessComment(models.Model):
     user = models.ForeignKey('ml_auth.MusicLoversUser', on_delete=models.CASCADE)
     text = models.CharField(max_length=250)
     rating = models.PositiveSmallIntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
 
     def user_name(self):
         return self.user.username
@@ -133,7 +139,7 @@ class BusinessComment(models.Model):
         return self.user.logo.url
 
     def __str__(self):
-        return self.event.title
+        return self.business.name
 
     def save(self, *args, **kwargs):
         if self.rating < 1 or self.rating > 5:
