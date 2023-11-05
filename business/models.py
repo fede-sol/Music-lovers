@@ -104,6 +104,7 @@ class EventComment(models.Model):
     user = models.ForeignKey('ml_auth.MusicLoversUser', on_delete=models.CASCADE)
     text = models.CharField(max_length=250)
     rating = models.PositiveSmallIntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def user_name(self):
         return self.user.username
@@ -113,6 +114,9 @@ class EventComment(models.Model):
             return self.user.logo.url
         else:
             return ''
+
+    def event_name(self):
+        return self.event.title
 
     def __str__(self):
         return self.event.title
@@ -128,6 +132,8 @@ class BusinessComment(models.Model):
     user = models.ForeignKey('ml_auth.MusicLoversUser', on_delete=models.CASCADE)
     text = models.CharField(max_length=250)
     rating = models.PositiveSmallIntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
 
     def user_name(self):
         return self.user.username
