@@ -328,7 +328,9 @@ class GetEventView(APIView):
         serialized_event = EventSerializer(event)
         serialized_comments = EventCommentSerializer(comments, many=True)
 
-        return Response({'event':serialized_event.data,'comments':serialized_comments.data}, status=status.HTTP_200_OK)
+        business = event.business
+
+        return Response({'business':{'name':business.name,'description':business.description,'logo':business.logo.url},'event':serialized_event.data,'comments':serialized_comments.data}, status=status.HTTP_200_OK)
 
 
 class GetBusinessView(APIView):
