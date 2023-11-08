@@ -78,6 +78,8 @@ class Event(models.Model):
 
 
 
+    def business_logo(self):
+        return self.business.logo.url
 
     def __str__(self):
         return self.title

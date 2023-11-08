@@ -283,6 +283,7 @@ class FilterEventsView(APIView):
 
 
         serialized_events = EventSerializer(events, many=True)
+        
         return Response(serialized_events.data, status=status.HTTP_200_OK)
 
 

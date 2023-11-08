@@ -17,7 +17,7 @@ class EventSerializer(serializers.ModelSerializer):
     genre_display = serializers.CharField(source='get_genre_display', read_only=True)
     class Meta:
         model = Event
-        fields = ['id', 'business', 'address', 'city', 'neighbourhood', 'title', 'description', 'price', 'datetime', 'artist', 'genre', 'genre_display', 'banner']
+        fields = ['id', 'business', 'address', 'city', 'neighbourhood', 'title', 'description', 'price', 'datetime', 'artist', 'genre', 'genre_display', 'banner','business_logo']
 
 
 class EventPhotoSerializer(serializers.ModelSerializer):
