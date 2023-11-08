@@ -75,15 +75,7 @@ class Event(models.Model):
     artist = models.CharField(max_length=100)
     genre = models.CharField(max_length=50, choices=GENRES)
 
-    def average_rating(self):
-        comments = EventComment.objects.filter(event=self)
-        if comments.count() == 0:
-            return 0
-        else:
-            sum = 0
-            for comment in comments:
-                sum += comment.rating
-            return sum / comments.count()
+
 
 
 
@@ -103,7 +95,6 @@ class EventComment(models.Model):
     event = models.ForeignKey('business.Event', on_delete=models.CASCADE)
     user = models.ForeignKey('ml_auth.MusicLoversUser', on_delete=models.CASCADE)
     text = models.CharField(max_length=250)
-    rating = models.PositiveSmallIntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
 
     def user_name(self):
