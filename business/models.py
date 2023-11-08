@@ -84,8 +84,9 @@ class Event(models.Model):
             for comment in comments:
                 sum += comment.rating
             return sum / comments.count()
-
-
+    
+    def business_logo(self):
+        return self.business.logo.url
 
     def __str__(self):
         return self.title
