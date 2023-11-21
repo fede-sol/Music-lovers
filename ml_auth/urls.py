@@ -7,3 +7,4 @@ urlpatterns = [
     path('client/login/', ClientLoginView.as_view(),name='login'),
     path('client/register/', ClientSignupView.as_view(),name='register'),
 ]
+
