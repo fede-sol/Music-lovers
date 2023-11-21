@@ -1,3 +1,4 @@
+import datetime
 from business.models import BusinessComment, Event, Business, EventComment
 from business.serializers import BusinessCommentSerializer, BusinessPhotoSerializer, BusinessSerializer, EventCommentSerializer, EventPhotoSerializer, EventSerializer
 from rest_framework.response import Response
@@ -255,7 +256,7 @@ class FilterEventsView(APIView):
         maxdate = request.query_params.get('maxdate', None)
         mindate = request.query_params.get('mindate', None)
 
-        events = Event.objects.all()
+        events = Event.objects.filter(datetime__gte=datetime.datetime.now())
 
         if title:
             events = events.filter(title__icontains=title)
@@ -283,7 +284,7 @@ class FilterEventsView(APIView):
 
 
         serialized_events = EventSerializer(events, many=True)
-        
+
         return Response(serialized_events.data, status=status.HTTP_200_OK)
 
 
@@ -319,7 +320,7 @@ class GetEventView(APIView):
         user = request.user
 
         try:
-            event = Event.objects.get(id=request.query_params.get('id', None))
+            event = Event.objects.get(id=request.query_params.get('id', None),datetime__gte=datetime.datetime.now())
         except Event.DoesNotExist:
             return Response({'error': 'El evento no existe'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -374,26 +375,26 @@ class GetCommentsView(APIView):
         serialized_business_comments = BusinessCommentSerializer(business_comments, many=True).data
 
         return Response({'business_comments':serialized_business_comments,'event_comments':serialized_event_comments}, status=status.HTTP_200_OK)
-    
+
 
 class DeleteBusinessComment(APIView):
-    
+
         authentication_classes = [JWTAuthentication]
         permission_classes = [IsAuthenticated]
-    
+
         def delete(self, request):
             user = request.user
-    
+
             try:
                 business = Business.objects.get(user=user)
             except Business.DoesNotExist:
                 return Response({'error': 'El usuario no tiene un negocio asignado'}, status=status.HTTP_404_NOT_FOUND)
-    
+
             try:
                 comment = BusinessComment.objects.get(id=request.query_params.get('id', None))
             except BusinessComment.DoesNotExist:
                 return Response({'error': 'El comentario no existe'}, status=status.HTTP_404_NOT_FOUND)
-    
+
             if comment.business == business:
                 comment.delete()
                 return Response({'message':'Comentario eliminado exitosamente'}, status=status.HTTP_200_OK)
@@ -401,23 +402,23 @@ class DeleteBusinessComment(APIView):
 
 
 class DeleteEventComment(APIView):
-    
+
         authentication_classes = [JWTAuthentication]
         permission_classes = [IsAuthenticated]
-    
+
         def delete(self, request):
             user = request.user
-    
+
             try:
                 business = Business.objects.get(user=user)
             except Business.DoesNotExist:
                 return Response({'error': 'El usuario no tiene un negocio asignado'}, status=status.HTTP_404_NOT_FOUND)
-    
+
             try:
                 comment = EventComment.objects.get(id=request.query_params.get('id', None))
             except EventComment.DoesNotExist:
                 return Response({'error': 'El comentario no existe'}, status=status.HTTP_404_NOT_FOUND)
-            
+
             business_events = Event.objects.filter(business=business)
 
             if comment.event in business_events:
